@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  mooddiary:
+    build: .
+    container_name: mooddiary
+    ports:
+      - "8088:5000"
+    volumes:
+      - ./:/app
+      - ./data:/app/data
+    environment:
+      - FLASK_ENV=production
+      - FLASK_APP=app.py
+    restart: unless-stopped
+    working_dir: /app
+    command: python -c "from app import app; app.run(host='0.0.0.0', port=5000, debug=False)"
