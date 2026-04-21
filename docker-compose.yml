@@ -1,0 +1,35 @@
+services:
+  mooddiary:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: mooddiary:latest
+    container_name: mooddiary-app
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./app.py:/app/app.py:ro
+      - ./templates:/app/templates:ro
+      - ./static:/app/static:ro
+      - ./data:/app/data
+    environment:
+      - TZ=Asia/Shanghai
+      - FLASK_ENV=production
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:5000/')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    networks:
+      - mooddiary-network
+
+networks:
+  mooddiary-network:
+    driver: bridge
