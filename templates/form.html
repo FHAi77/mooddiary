@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% if diary %}编辑日记{% else %}添加日记{% endif %} - 心情日记</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>{% if diary %}✏️ 编辑日记{% else %}📝 添加日记{% endif %}</h1>
+            <a href="{{ url_for('index') }}" class="btn btn-secondary">← 返回列表</a>
+        </header>
+
+        <form method="POST" class="diary-form">
+            <div class="form-group">
+                <label for="date">日期</label>
+                <input type="date" id="date" name="date" value="{{ today }}" required>
+            </div>
+
+            <div class="form-group">
+                <label>今日心情</label>
+                <div class="mood-options">
+                    <label class="mood-option">
+                        <input type="radio" name="mood" value="happy" {% if diary and diary.mood == 'happy' %}checked{% endif %} required>
+                        <span class="mood-label happy">😊 开心</span>
+                    </label>
+                    <label class="mood-option">
+                        <input type="radio" name="mood" value="normal" {% if not diary or diary.mood == 'normal' %}checked{% endif %}>
+                        <span class="mood-label normal">😐 一般</span>
+                    </label>
+                    <label class="mood-option">
+                        <input type="radio" name="mood" value="sad" {% if diary and diary.mood == 'sad' %}checked{% endif %}>
+                        <span class="mood-label sad">😢 低落</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="note">心情备注</label>
+                <textarea id="note" name="note" rows="4" placeholder="写下今天的心情..." required maxlength="500">{% if diary %}{{ diary.note }}{% endif %}</textarea>
+                <div class="char-count">最多500字</div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">
+                    {% if diary %}保存修改{% else %}添加日记{% endif %}
+                </button>
+                <a href="{{ url_for('index') }}" class="btn btn-secondary">取消</a>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

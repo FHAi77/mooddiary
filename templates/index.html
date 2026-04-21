@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>心情日记</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📔 心情日记</h1>
+            <p class="subtitle">记录每一天的心情</p>
+        </header>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash {{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div class="stats-section">
+            <h2>📊 心情统计</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>本周统计</h3>
+                    <div class="mood-stats">
+                        <div class="stat-item">
+                            <span class="mood-dot" style="background: {{ MOOD_COLORS.happy }}"></span>
+                            <span>开心: {{ week_stats.happy }} 天</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="mood-dot" style="background: {{ MOOD_COLORS.normal }}"></span>
+                            <span>一般: {{ week_stats.normal }} 天</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="mood-dot" style="background: {{ MOOD_COLORS.sad }}"></span>
+                            <span>低落: {{ week_stats.sad }} 天</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <h3>本月统计</h3>
+                    <div class="mood-stats">
+                        <div class="stat-item">
+                            <span class="mood-dot" style="background: {{ MOOD_COLORS.happy }}"></span>
+                            <span>开心: {{ month_stats.happy }} 天</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="mood-dot" style="background: {{ MOOD_COLORS.normal }}"></span>
+                            <span>一般: {{ month_stats.normal }} 天</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="mood-dot" style="background: {{ MOOD_COLORS.sad }}"></span>
+                            <span>低落: {{ month_stats.sad }} 天</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="toolbar">
+            <a href="{{ url_for('add_diary') }}" class="btn btn-primary">➕ 添加日记</a>
+            
+            <div class="filters">
+                <form method="GET" action="{{ url_for('index') }}" class="filter-form">
+                    <input type="date" name="start_date" value="{{ start_date }}" placeholder="开始日期">
+                    <input type="date" name="end_date" value="{{ end_date }}" placeholder="结束日期">
+                    <select name="sort">
+                        <option value="desc" {% if sort == 'desc' %}selected{% endif %}>最新优先</option>
+                        <option value="asc" {% if sort == 'asc' %}selected{% endif %}>最早优先</option>
+                    </select>
+                    <button type="submit" class="btn btn-small">查询</button>
+                    {% if start_date or end_date %}
+                        <a href="{{ url_for('index') }}" class="btn btn-small btn-secondary">清除</a>
+                    {% endif %}
+                </form>
+            </div>
+        </div>
+
+        <div class="diary-list">
+            {% if diaries %}
+                {% for diary in diaries %}
+                    <div class="diary-card">
+                        <div class="diary-header">
+                            <div class="diary-date">{{ diary.date.strftime('%Y年%m月%d日') }}</div>
+                            <span class="mood-badge" style="background: {{ MOOD_COLORS[diary.mood] }}">
+                                {{ MOOD_LABELS[diary.mood] }}
+                            </span>
+                        </div>
+                        <div class="diary-note">{{ diary.note }}</div>
+                        <div class="diary-actions">
+                            <a href="{{ url_for('edit_diary', id=diary.id) }}" class="btn btn-small btn-secondary">编辑</a>
+                            <a href="{{ url_for('delete_diary', id=diary.id) }}" class="btn btn-small btn-danger" onclick="return confirm('确定删除这条日记吗？')">删除</a>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty-state">
+                    <p>还没有日记记录</p>
+                    <a href="{{ url_for('add_diary') }}" class="btn btn-primary">写下第一篇日记</a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>
