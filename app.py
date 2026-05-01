@@ -2,10 +2,11 @@ from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime, timedelta
 from sqlalchemy import func
+import os
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'mooddiary_secret_key_2024'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///mooddiary.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///mooddiary.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
@@ -143,4 +144,4 @@ def delete_diary(id):
     return redirect(url_for('index'))
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=False)
